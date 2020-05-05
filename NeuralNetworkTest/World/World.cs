@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using NeuralNetworkTest.Genetic;
 using NeuralNetworkTest.Objects.Creature;
 using NeuralNetworkTest.Objects.Food;
@@ -74,10 +75,8 @@ namespace NeuralNetworkTest.World
             {
                 Parallel.ForEach(otherWorldObjects, otherWorldObject =>
                 {
-                    if (worldObject != otherWorldObject &&
-                        Math.Abs((worldObject.Position - otherWorldObject.Position).Length - (worldObject.Width/2) -
-                                 (otherWorldObject.Width/2)) < 5)
-                        if (
+                    if(worldObject != otherWorldObject && CreateRect(worldObject).IntersectsWith(CreateRect(otherWorldObject)))
+                        if(
                             !collisions.Any(
                                 c =>
                                     (c.Item1 == worldObject && c.Item2 == otherWorldObject) ||
@@ -87,6 +86,11 @@ namespace NeuralNetworkTest.World
             });
 
             return collisions.ToArray();
+        }
+
+        private static Rect CreateRect(IWorldObject worldObject)
+        {
+            return new Rect(worldObject.Position.X - worldObject.Width / 2, worldObject.Position.Y - worldObject.Width / 2, worldObject.Width, worldObject.Width);
         }
 
         public void Setup(double width, double height)
